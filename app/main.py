@@ -576,13 +576,50 @@ def pagina_vendas():
             st.info("Nenhuma venda ativa para cancelar")
 
 
+def pagina_relatorios():
+    st.header("📊 Relatório Geral do Sistema")
+    
+    # --- RESUMO DE ESTOQUE ---
+    st.subheader("📦 Posição do Estoque")
+    produtos = st.session_state.gerenciador_produtos.listar_todos()
+    
+    total_produtos = len(produtos)
+    valor_total_estoque = sum(p.calcular_valor_total_estoque() for p in produtos)
+    produtos_em_falta = len(st.session_state.gerenciador_produtos.obter_produtos_em_falta())
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Itens Cadastrados", total_produtos)
+    col2.metric("Valor Total do Estoque", f"R$ {valor_total_estoque:.2f}")
+    col3.metric("Produtos em Falta", produtos_em_falta)
+    
+    st.divider()
+    
+    # --- RESUMO DE CLIENTES ---
+    st.subheader("👥 Base de Clientes")
+    clientes = st.session_state.gerenciador_clientes.listar_todos()
+    st.metric("Total de Clientes Cadastrados", len(clientes))
+    
+    st.divider()
+    
+    # --- RESUMO DE VENDAS ---
+    st.subheader("💰 Resumo Financeiro")
+    vendas = st.session_state.gerenciador_vendas.listar_todos()
+    
+    vendas_concluidas = [v for v in vendas if v['status'] == 'concluida']
+    valor_total_vendas = sum(float(v['total'] or 0) for v in vendas_concluidas)
+    
+    col4, col5 = st.columns(2)
+    col4.metric("Total de Vendas Concluídas", len(vendas_concluidas))
+    col5.metric("Faturamento Total", f"R$ {valor_total_vendas:.2f}")
+
+
 def main():
     st.title("🛒 Sistema de Supermercado")
     
     st.sidebar.title("Menu")
     pagina = st.sidebar.radio(
         "Navegação",
-        ["📦 Produtos", "👥 Clientes", "💰 Vendas"]
+        ["📦 Produtos", "👥 Clientes", "💰 Vendas","📊 Relatórios"]
     )
     
     if pagina == "📦 Produtos":
@@ -591,7 +628,8 @@ def main():
         pagina_clientes()
     elif pagina == "💰 Vendas":
         pagina_vendas()
-
+    elif pagina == "📊 Relatórios":
+        pagina_relatorios()
 
 if __name__ == "__main__":
     main()
