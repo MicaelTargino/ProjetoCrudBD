@@ -58,6 +58,24 @@ class Cliente:
     def obter_primeiro_nome(self) -> str:
         return self.nome.split()[0] if self.nome else ""
     
+    def formatar_cpf(self) -> str:
+        # Pega apenas os números do CPF
+        cpf_limpo = ''.join(filter(str.isdigit, self.cpf))
+        if len(cpf_limpo) == 11:
+            return f"{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}"
+        return self.cpf
+
+    def formatar_telefone(self) -> str:
+        tel_limpo = ''.join(filter(str.isdigit, self.telefone))
+        if len(tel_limpo) == 11:
+            return f"({tel_limpo[:2]}) {tel_limpo[2:7]}-{tel_limpo[7:]}"
+        return self.telefone
+
+    def validar_cpf(self) -> bool:
+        # Validação simples para ver se tem 11 dígitos
+        cpf_limpo = ''.join(filter(str.isdigit, self.cpf))
+        return len(cpf_limpo) == 11
+    
     def to_dict(self) -> dict:
         return {
             'codigo': self.codigo,
